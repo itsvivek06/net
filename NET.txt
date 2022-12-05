@@ -1,0 +1,287 @@
+-- iservice
+
+[ServiceContract]
+public interface IService
+{
+    [OperationContract]
+    string insertData(employee ins);
+
+    [OperationContract]
+    List<employee> dispData();
+
+    [OperationContract]
+    string deleteData(employee del);
+
+    [OperationContract]
+    List<employee> dispOne(employee sel);
+
+    [OperationContract]
+    string updData(employee upd);
+
+    // TODO: Add your service operations here
+}
+
+[DataContract]
+public class employee
+{
+    [DataMember]
+    public int id { get; set; }
+
+    [DataMember]
+    public string name { get; set; }
+
+    [DataMember]
+    public string gender { get; set; }
+
+    [DataMember]
+    public int age { get; set; }
+
+
+    [DataMember]
+    public string designation { get; set; }
+
+    [DataMember]
+    public int salary { get; set; }
+}
+
+
+--- Service
+
+public class Service : IService
+{
+
+
+    public string insertData(employee ins)
+    {
+        string msg = "";
+        SqlConnection cn = new SqlConnection("Data Source=.\\SQLEXPRESS;Initial Catalog=Mihir;Integrated Security=True");
+        cn.Open();
+        string qry = "insert into employee values ('" + ins.name + "','" + ins.gender + "','" + ins.age + "','" + ins.designation + "','" + ins.salary + "')";
+        SqlCommand sq = new SqlCommand(qry, cn);
+        int m = sq.ExecuteNonQuery();
+        if (m == 1)
+        {
+            msg = "inserted !";
+        }
+        else
+        {
+            msg = "ni thayu";
+        }
+        cn.Close();
+        cn.Dispose();
+        return msg;
+    }
+    public List<employee> dispData()
+    {
+        List<employee> l = new List<employee>();
+        SqlConnection cn = new SqlConnection("Data Source=.\\SQLEXPRESS;Initial Catalog=Mihir;Integrated Security=True");
+        cn.Open();
+        string qry = "select * from employee";
+        SqlCommand sq = new SqlCommand(qry, cn);
+        SqlDataReader dr = sq.ExecuteReader();
+        if (dr.HasRows)
+        {
+            while (dr.Read())
+            {
+                employee e = new employee();
+                e.id = Convert.ToInt32(dr[0].ToString());
+                e.name = dr[1].ToString();
+                e.gender = dr[2].ToString();
+                e.age = Convert.ToInt32(dr[3].ToString());
+                e.designation = dr[4].ToString();
+                e.salary = Convert.ToInt32(dr[5].ToString());
+                l.Add(e);
+            }
+        }
+        cn.Close();
+        cn.Dispose();
+        return l;
+    }
+
+    public string deleteData(employee del)
+    {
+        string msg = "";
+        SqlConnection cn = new SqlConnection("Data Source=.\\SQLEXPRESS;Initial Catalog=Mihir;Integrated Security=True");
+        cn.Open();
+        string qry = "delete from employee where id='" + del.id + "'";
+        SqlCommand sq = new SqlCommand(qry, cn);
+        int m = sq.ExecuteNonQuery();
+        if (m == 1)
+        {
+            msg = "deleted !";
+        }
+        else
+        {
+            msg = "delete ni thayu";
+        }
+        cn.Close();
+        cn.Dispose();
+        return msg;
+    }
+
+    public List<employee> dispOne(employee sel)
+    {
+        List<employee> ld = new List<employee>();
+        SqlConnection cn = new SqlConnection("Data Source=.\\SQLEXPRESS;Initial Catalog=Mihir;Integrated Security=True");
+        cn.Open();
+        string qry = "select * from employee where id='" + sel.id + "'";
+        SqlCommand sq = new SqlCommand(qry, cn);
+        SqlDataReader dr = sq.ExecuteReader();
+        if (dr.HasRows)
+        {
+            while (dr.Read())
+            {
+                employee e = new employee();
+                e.id = Convert.ToInt32(dr[0].ToString());
+                e.name = dr[1].ToString();
+                e.gender = dr[2].ToString();
+                e.age = Convert.ToInt32(dr[3].ToString());
+                e.designation = dr[4].ToString();
+                e.salary = Convert.ToInt32(dr[5].ToString());
+                ld.Add(e);
+            }
+        }
+        cn.Close();
+        cn.Dispose();
+        return ld;
+    }
+
+    public string updData(employee upd)
+    {
+        string msg = "";
+        SqlConnection cn = new SqlConnection("Data Source=.\\SQLEXPRESS;Initial Catalog=Mihir;Integrated Security=True");
+        cn.Open();
+        string qry = "update employee set name='" + upd.name + "',gender='" + upd.gender + "',age='" + upd.age + "',designation='" + upd.designation + "',salary='" + upd.salary + "' where id='" + upd.id + "'";
+        SqlCommand sq = new SqlCommand(qry, cn);
+        int m = sq.ExecuteNonQuery();
+        if (m == 1)
+        {
+            msg = "updated !";
+        }
+        else
+        {
+            msg = "update ni thayu";
+        }
+        cn.Close();
+        cn.Dispose();
+        return msg;
+    }
+}
+
+---Client--- Default.Aspx
+
+---Gridview Add Line For Delete Update Button
+
+<asp:GridView ID="GridView1" runat="server" AutoGenerateSelectButton="true"  OnSelectedIndexChanged="updatedata"  
+            AutoGenerateDeleteButton="true" DataKeyNames="id" OnRowDeleting="rowdeleting"  AutoGenerateColumns="False">
+
+using ServiceReference1;
+
+public partial class _Default : System.Web.UI.Page
+{
+    ServiceClient sc;
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            loadData();
+        
+        }
+    }
+    public void loadData()
+    {
+        sc = new ServiceClient();
+        var disp = sc.dispData();
+
+        GridView1.DataSource = disp;
+        GridView1.DataBind();
+        
+    }
+    public void clearData()
+    {
+        HiddenField1.Value = "";
+        txtname.Text = "";
+        txtage.Text = "";
+        txtdes.Text = "";
+        txtsal.Text = "";
+    }
+    protected void Button1_Click(object sender, EventArgs e)
+    {
+        sc = new ServiceClient();
+        employee emp = new employee();
+        emp.name = txtname.Text;
+        if (RadioButton1.Checked)
+        {
+            emp.gender = RadioButton1.Text;
+        }
+        else
+        {
+            emp.gender = RadioButton2.Text;
+        }
+        emp.age = Convert.ToInt32(txtage.Text);
+        emp.designation = txtdes.Text;
+        emp.salary = Convert.ToInt32(txtsal.Text);
+        string msg= sc.insertData(emp);
+        Response.Write("<script>alert('" + msg + "');</script>");
+        loadData();
+        clearData();
+    }
+
+   public void rowdeleting(object sender, GridViewDeleteEventArgs ge)
+    {
+        sc = new ServiceClient();
+        int delid = Convert.ToInt32(GridView1.DataKeys[ge.RowIndex].Value);
+        employee emp = new employee();
+        emp.id = delid;
+        string msg = sc.deleteData(emp);
+        Response.Write("<script>alert('" + msg + "');</script>");
+        //Response.Redirect('Default.aspx');
+        loadData();
+    }
+
+    public void updatedata(object sender,EventArgs ee)//search one
+    {
+        sc = new ServiceClient();
+        int dispid = Convert.ToInt32(GridView1.SelectedRow.Cells[1].Text);
+        employee emp = new employee();
+        emp.id = dispid;
+        var dispone = sc.dispOne(emp);
+        foreach (var item in dispone)
+        {
+            HiddenField1.Value = item.id.ToString();
+            txtname.Text = item.name;
+            txtage.Text = item.age.ToString();
+            txtdes.Text = item.designation;
+            txtsal.Text = item.salary.ToString();
+        }
+    }
+
+    protected void update_Click(object sender, EventArgs e)
+    {
+        
+        sc = new ServiceClient();
+        employee emp = new employee();
+        emp.id = Convert.ToInt32(HiddenField1.Value);
+        emp.name = txtname.Text;
+        if (RadioButton1.Checked)
+        {
+            emp.gender = RadioButton1.Text;
+        }
+        else
+        {
+            emp.gender = RadioButton2.Text;
+        }
+    
+        emp.age = Convert.ToInt32(txtage.Text);
+        emp.designation = txtdes.Text;
+        emp.salary = Convert.ToInt32(txtsal.Text);
+        string msg = sc.updData(emp);
+        Response.Write("<script>alert('" + msg + "');</script>");
+        loadData();
+        clearData();
+    }
+}
+
+
+
+
