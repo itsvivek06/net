@@ -1,0 +1,307 @@
+tic-tac--
+
+    public partial class frm4 : Form
+    {
+        public frm4()
+        {
+            InitializeComponent();
+        }
+        Button[,] btn;
+        int n,count=0;
+        bool turn= true; // true=X false=O
+        String p1, p2;
+        bool ans = true;
+        String winner="";
+        private void btnSubmit_Click(object sender, EventArgs e)
+        {
+            
+            try
+            {
+                p1 = txtPlayer1.Text;
+                p2 = txtPlayer2.Text;
+                assign_name();
+                create_button();
+            }
+            catch
+            {
+                MessageBox.Show("Enter No. of Rows..Valid...", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+
+            }
+           
+           
+
+        }
+
+        private void btnClick(object sender,EventArgs e)
+        {
+            Button b = (Button)sender;
+            count++;
+            if (turn)
+            {
+                b.Text = "X";
+            }
+            else
+            {
+                b.Text = "O";
+            }
+            b.Enabled = false;
+            bool result = checkWin();
+            if (result == true)
+            {
+                if (turn)
+                {
+                    lblWinner.Text = p1;
+                    MessageBox.Show("Winner : ",p1);
+                }
+                else
+                {
+                    lblWinner.Text = p2;
+                    MessageBox.Show("Winner : ", p2);
+                }
+                lblWinner.Visible = true;
+                for (int i = 0; i < n; i++)
+                {
+                    for (int j = 0; j < n; j++)
+                    {
+                        btn[i,j].Enabled = false;
+                    }
+                }
+            }
+            else if(count >= n*n)
+            {
+                lblWinner.Text = "Game Over";
+                lblWinner.Visible = true;
+                MessageBox.Show("Game Over...");
+            }
+            else
+            {
+                turn = !turn;
+            }
+            
+            
+            
+        }
+
+        private bool checkWin()
+        {
+            // for row check
+            for (int i = 0; i < n; i++)
+            {
+                ans = true;
+                for (int j = 1; j < n; j++)
+                {
+                    if ((Equals(btn[i, 0].Text.ToString(), btn[i, j].Text.ToString()) == true) && (btn[i, j].Enabled == false))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        ans = false;
+                    }
+                }
+                if(ans == true)
+                {
+                    return ans;
+                }
+                
+            }
+
+            // for column check
+            for (int i = 0; i < n; i++)
+            {
+                ans = true;
+                for (int j = 1; j < n; j++)
+                {
+                    if ((Equals(btn[0, i].Text.ToString(), btn[j, i].Text.ToString()) == true) && (btn[j, i].Enabled == false))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        ans = false;
+                    }
+                }
+                if (ans == true)
+                {
+                    return ans;
+                }
+
+            }
+
+            // for first Diagonal check
+            for (int i = 0; i < n; i++)
+            {
+                ans = true;
+                for (int j = 1; j < n; j++)
+                {
+                    if ((Equals(btn[i, 0].Text.ToString(), btn[i, j].Text.ToString()) == true) && (btn[i, j].Enabled == false) && (i==j))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        ans = false;
+                    }
+                }
+                if (ans == true)
+                {
+                    return ans;
+                }
+
+            }
+
+            // for second Diagonal check
+            for (int i = 0; i < n; i++)
+            {
+                ans = true;
+                for (int j = 1; j < n; j++)
+                {
+                    if ((Equals(btn[i, 0].Text.ToString(), btn[i, j].Text.ToString()) == true) && (btn[i, j].Enabled == false) && (i + j == n-1))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        ans = false;
+                    }
+                }
+                if (ans == true)
+                {
+                    return ans;
+                }
+
+            }
+            return ans;
+            /*
+            String digonalfirst = btn[0, 0].Text.ToString();
+            for (int j = 0; j < n; j++)
+            {
+                if ((i==j) && (digonalfirst != btn[j, i].Text.ToString()) && (btn[j, i].Enabled == false))
+                {
+                    ans = false;
+                    break;
+                }
+            }
+            ans = true;
+            String digonalsecond = btn[0, n-1].Text.ToString();
+            for (int j = 0; j < n; j++)
+            {
+                if ((i+j == n-1) && (digonalsecond != btn[j, i].Text.ToString()) && (btn[j, i].Enabled == false))
+                {
+                    ans = false;
+                    break;
+                }
+            }
+            */
+
+        }
+
+        private void assign_name()
+        {
+            if(txtPlayer1.Text.Equals("") || txtPlayer2.Equals(""))
+            {
+                MessageBox.Show("Please enter Players Name..","Warning",MessageBoxButtons.OK,MessageBoxIcon.Warning);
+            }
+            else if (txtNum.Text.Equals(""))
+            {
+                MessageBox.Show("Please enter No. of Row..", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                n = Convert.ToInt32(txtNum.Text);
+                MessageBox.Show(n.ToString());
+
+                lblPlayer1.Text = txtPlayer1.Text;
+                lblPlayer2.Text = txtPlayer2.Text;
+                lblNum.Text = txtNum.Text;
+
+                txtPlayer1.Visible = false;
+                txtPlayer2.Visible = false;
+                txtNum.Visible = false;
+                btnSubmit.Visible = false;
+
+                lblPlayer1.Visible = true;
+                lblPlayer2.Visible = true;
+                lblNum.Visible = true;
+                btnNewGame.Visible = true;
+
+                lblWinner.Text = "";
+                lblWinner.Visible = false;
+                count = 0;
+
+            }
+            
+        }
+
+        private void btnNewGame_Click(object sender, EventArgs e)
+        {
+            turn = true;
+            p1 = p2 = "";
+            for(int i = 0; i < n; i++)
+            {
+                for(int j = 0; j < n; j++)
+                {
+                    btn[i, j].Visible = false;
+                    btn[i, j] = null;
+                }
+            }
+
+            btn = null;
+            n = 0;
+            lblPlayer1.Text = txtPlayer1.Text = "";
+            lblPlayer2.Text = txtPlayer2.Text = "";
+            lblNum.Text = txtNum.Text = "";
+
+            txtPlayer1.Visible = true;
+            txtPlayer2.Visible = true;
+            txtNum.Visible = true;
+            btnSubmit.Visible = true;
+
+            lblPlayer1.Visible = false;
+            lblPlayer2.Visible = false;
+            lblNum.Visible = false;
+            btnNewGame.Visible = false;
+
+            lblWinner.Text = "";
+            lblWinner.Visible = false;
+            count = 0;
+        }
+
+        private void create_button()
+        {
+            btn = new Button[n, n];
+            int left = 500, top = 50;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    Button b = new Button();
+                    b.Height = 50;
+                    b.Width = 50;
+                    b.Left = left;
+                    b.Top = top;
+                    b.Text = "";
+                    b.BackColor = Color.White;
+                    b.Name = "btn" + i.ToString() + j.ToString();
+                    b.Visible = true;
+                    b.TabStop = false;
+                    b.Click += new EventHandler(btnClick);
+                    btn[i, j] = b;
+
+                    left += 55;
+                }
+                top += 55;
+                left = 500;
+            }
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    this.Controls.Add(btn[i, j]);
+                }
+            }
+        }
+    }

@@ -1,0 +1,98 @@
+----Console--
+
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            {
+                Console.WriteLine("Enter Rows: ");
+                int m = Convert.ToInt32(Console.ReadLine());
+                Console.WriteLine("Enter Coloumns: ");
+                int n = Convert.ToInt32(Console.ReadLine());
+                int[,] matrix = new int[m, n];
+                int row = m, cl = n;
+                int k = 0, l = 0;
+                while (k < m && l < n)
+                {
+                    for (int i = l; i < n; i++)
+                    {
+                        Console.WriteLine("Enter value :");
+                        int a = Convert.ToInt32(Console.ReadLine());
+                        matrix[k, i] = a;
+                    }
+                    k++;
+                    for (int i = k; i < m; i++)
+                    {
+                        Console.WriteLine("Enter value :");
+                        int a = Convert.ToInt32(Console.ReadLine());
+                        matrix[i, n - 1] = a;
+                    }
+                    n--;
+                    if (k < m)
+                    {
+                        for (int i = n - 1; i >= l; --i)
+                        {
+                            Console.WriteLine("Enter value :");
+                            int a = Convert.ToInt32(Console.ReadLine());
+                            matrix[m - 1, i] = a;
+                        }
+                        m--;
+                    }
+                    if (l < n)
+                    {
+                        for (int i = m - 1; i >= k; --i)
+                        {
+                            Console.WriteLine("Enter value: ");
+                            int a = Convert.ToInt32(Console.ReadLine());
+                            matrix[i, l] = a;
+                        }
+                        l++;
+                    }
+                }
+
+                for (int i = 0; i < row; i++)
+                {
+                    for (int j = 0; j < cl; j++)
+                    {
+                        Console.Write(matrix[i, j] + " ");
+                        
+                    }
+                    Console.Write("\n");
+                    
+                }
+                Console.Read();
+            }
+        }
+    }
+
+
+
+----Console Array--
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            {
+                ArrayList al = new ArrayList();
+                while (true)
+                {
+                    Console.Write("Enter The Data: ");
+                    String data = Console.ReadLine();
+                    if (data == "0")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        al.Add(data);
+                    }
+                }
+                Console.WriteLine("ArrayList Items :");
+                for (int i = 0; i < al.Count; i++)
+                    Console.WriteLine(al[i]);
+                Console.Read();
+            }
+        }
+    }
